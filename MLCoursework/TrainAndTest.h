@@ -14,8 +14,8 @@
 
 
 
-int  train(float **argv, int numSamples, int numFeatures, char *labels) ;
-char  test(float *newSample, int numFeatures);
+int  train( double **trainingSamples, char *trainingLabels, int numSamples, int numFeatures);
+char  predictLabel(double *sample, int numFeatures);
 
 
 

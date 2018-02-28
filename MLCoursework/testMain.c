@@ -11,7 +11,7 @@
 #include "MLCoursework.h"
 #include "TrainAndTest.h"
 
-#include "IrisData.h"
+#include "TestDataset.h"
 
 #include <stdlib.h>
 
@@ -29,8 +29,18 @@ int main(int argc, const char * argv[])
     double   mySample[NUM_FEATURES];
     int version;
     double accuracy, score, target;
-    int randInt;
+    int randInt, i=0;
     char randLabel;
+    //these next few used to score and analyse what the student's code predicts
+    char predictionLabels[NUM_TEST_SAMPLES];
+    int numDifferentPredictions=0;
+    int usedBefore=0;
+    int predictionsCounters[NUM_TEST_SAMPLES];
+    for(i=0;i<NUM_TEST_SAMPLES;i++)
+        {
+        predictionLabels[i] = '-';
+        predictionsCounters[i]=0;
+        }
     
     
     //allocate space for data storage
@@ -38,7 +48,6 @@ int main(int argc, const char * argv[])
     for(sample=0;sample < NUM_TRAINING_SAMPLES; sample++)
         trainingSet[sample] = calloc(NUM_FEATURES, sizeof(double));
     
-                                  
     char *trainingLabels = calloc(NUM_TRAINING_SAMPLES , sizeof(char));
     
     double **testSet = calloc(NUM_TEST_SAMPLES , sizeof(double *));
@@ -47,9 +56,11 @@ int main(int argc, const char * argv[])
 
     char * testLabels = calloc(NUM_TEST_SAMPLES, sizeof(char));
     
+    
+    
 if(argc!=2)
   {
-    printf("expected to see one numerical argument ot the main function\n");
+    printf("expected to see one numerical argument to the main function\n");
     return(0);
   }
     sscanf(argv[1],"%d",&version);
@@ -57,75 +68,76 @@ if(argc!=2)
   {
         case 0: //simple 2/3: 1/3 split of iris data into training and test set matrices
         target = 97.0;
-            for(sample=0; sample< IRIS_SET_SIZE;  sample++)
+
+            for(sample=0; sample< EVALUATION_SET_SIZE;  sample++)
               {
                 if(sample%3==0)
                   {
-                    for (feature=0;feature < IRISFEATURES;  feature++)
-                        testSet[testsamples][feature] = iris_data[sample][feature];
-                    testLabels[testsamples] =iris_labels[sample];
+                    for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                        testSet[testsamples][feature] = evaluation_data[sample][feature];
+                    testLabels[testsamples] =evaluation_labels[sample];
                     testsamples++;
                   }
                 else
                   {
-                    for (feature=0;feature < IRISFEATURES;  feature++)
-                        trainingSet[trainingsamples][feature] = iris_data[sample][feature];
-                    trainingLabels[trainingsamples] = iris_labels[sample];
+                    for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                        trainingSet[trainingsamples][feature] = evaluation_data[sample][feature];
+                    trainingLabels[trainingsamples] = evaluation_labels[sample];
                     trainingsamples++;
                   }
               }
             break;
             
         case 1:
-            //just give examples from classes 'a' and 'b' to the train function - duplicates used in train
+            //just give examples from classes 'p' and 'q' to the train function - duplicates used in train
         target = 50.0;
-            for(sample=0; sample< IRIS_SET_SIZE;  sample++)
+            for(sample=0; sample< EVALUATION_SET_SIZE;  sample++)
               {
                 if(  ( sample < 25) || ( sample >=75 && sample <100))
                   {
-                    for (feature=0;feature < IRISFEATURES;  feature++)
-                        trainingSet[trainingsamples][feature] = iris_data[sample][feature];
-                    trainingLabels[trainingsamples] = iris_labels[sample];
+                    for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                        trainingSet[trainingsamples][feature] = evaluation_data[sample][feature];
+                    trainingLabels[trainingsamples] = evaluation_labels[sample];
                     trainingsamples++;
 
                     //take a slightly distorted copy of each to make up the training set to the right number
-                    for (feature=0;feature < IRISFEATURES;  feature++)
-                        trainingSet[trainingsamples][feature] = iris_data[sample][feature]+ 0.1;
-                    trainingLabels[trainingsamples] = iris_labels[sample];
+                    for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                        trainingSet[trainingsamples][feature] = evaluation_data[sample][feature]+ 0.1;
+                    trainingLabels[trainingsamples] = evaluation_labels[sample];
                     trainingsamples++;
 
                   }
-                   //use some of the remaining examples of classes 'a' and 'b' and half those of c to make up the test set
+                   //use some of the remaining examples of classes 'p' and 'q' and half those of r to make up the test set
                 else if ( (sample>=40 && sample <65) || ( 100<=sample && sample < 125)  )
                   {
-                    for (feature=0;feature < IRISFEATURES;  feature++)
-                        testSet[testsamples][feature] = iris_data[sample][feature];
-                    testLabels[testsamples] =iris_labels[sample];
+                    for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                        testSet[testsamples][feature] = evaluation_data[sample][feature];
+                    testLabels[testsamples] =evaluation_labels[sample];
                     testsamples++;
                   }
                else
-                 {;//don;t use the last 25 class 'c' samples
+                 {;//don;t use the last 25 class 'r' samples
                  }
               }
             break;
-      case 2: //2:1 split of iris data with randomly assigned labels
+      case 2: //2:1 split of test data with randomly assigned labels
         target = 33.3;
         srand(64645);
-        for(sample=0; sample< IRIS_SET_SIZE;  sample++)
+        for(sample=0; sample< EVALUATION_SET_SIZE;  sample++)
           {
             randInt = rand()%3;
-            randLabel = (randInt==0)? 'a': ( (randInt==1)?'b':'c');
+            randLabel = (randInt==0)? 'p': ( (randInt==1)?'q':'r');
             if(sample%3==0)
               {
-                for (feature=0;feature < IRISFEATURES;  feature++)
-                    testSet[testsamples][feature] = iris_data[sample][feature];
+                for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                    testSet[testsamples][feature] = evaluation_data[sample][feature];
                 testLabels[testsamples] =randLabel;
                 testsamples++;
               }
             else
               {
-                for (feature=0;feature < IRISFEATURES;  feature++)
-                    trainingSet[trainingsamples][feature] = iris_data[sample][feature];
+                for (feature=0;feature < EVALUATIONFEATURES;  feature++)
+                    trainingSet[trainingsamples][feature] = evaluation_data[sample][feature];
                 trainingLabels[trainingsamples] = randLabel;
                 trainingsamples++;
               }
@@ -136,7 +148,7 @@ if(argc!=2)
         default:
         printf("I haven't decided what to use for the fourth data set yet\n");
         exit(0);
-            break;
+        break;
   }
     
     
@@ -160,37 +172,65 @@ if(argc!=2)
             for(feature = 0 ; feature < NUM_FEATURES; feature++)
                 mySample[feature] = trainingSet[sample][feature];
             
+              //see what the student's code predicts
             prediction = predictLabel( mySample, NUM_FEATURES);
+              //see if it is right
             if (prediction == trainingLabels[sample])
                 correct++;
             else
                 wrong++;
+              //see if they have made this prediction before
+            usedBefore=0;
+            for(  i=0;i< numDifferentPredictions && usedBefore==0;i++)
+                {
+                  if (prediction == predictionLabels[i])
+                  {
+                      predictionsCounters[i]++;
+                      usedBefore = 1;
+                  }
+                }
+              if(usedBefore==0)
+              {
+                  predictionLabels[numDifferentPredictions] = prediction;
+                  predictionsCounters[numDifferentPredictions] = 1;
+                  numDifferentPredictions++;
+              }
           }
+              
            accuracy = 100.0*(double)correct/(correct+wrong);
-        //printf("On  training set %d: %d correct %d incorrect, accuracy = %f %%\n", version,correct,wrong,accuracy );
-        
-
+              printf("JIM_FEEDBACK: On  training set %d: your code got %d correct %d incorrect, accuracy = %f %%\n", version,correct,wrong,accuracy );
+              printf("JIM_FEEDBACK: \t\tThe frequency with which it predicted different class labels was: \t");
+              for(int  i=0;i< numDifferentPredictions ;i++)
+              {
+                  printf("  %c  %d\t",predictionLabels[i],predictionsCounters[i]);
+              }
+          printf("\n");
+          
         //now the results that matter - from the test set
-        correct=wrong=0;
+        correct=wrong= numDifferentPredictions =0;
+        for( i=0;i<NUM_TEST_SAMPLES;i++)
+        {
+            predictionLabels[i] = '-';
+            predictionsCounters[i]=0;
+        }
+        
         for(sample=0; sample < testsamples; sample++)
           {
-            //copy into temp array ot pass into fiunction
+            //copy into temp array to pass into function
             for(feature = 0 ; feature < NUM_FEATURES; feature++)
                 mySample[feature] = testSet[sample][feature];
             
             prediction = predictLabel(mySample, NUM_FEATURES);
-            
-            //if(sample==0)
-            //    prediction = 't';
-            
-            if(prediction != 'a' && prediction != 'b' && prediction != 'c')
+              //is prediction invalid?
+            if(prediction != 'p' && prediction != 'q' && prediction != 'r')
                 unachievable++;
             
-            // test set 1 should nrever predict a 'c'
-            if (version==1 && prediction=='c') {
+            // test set 1 should never predict a 'r'
+            if (version==1 && prediction=='r') {
                 unachievable++;
             }
             
+              //is predcition correct?
             if (prediction == testLabels[sample])
                 correct++;
             else
@@ -198,6 +238,24 @@ if(argc!=2)
                 //printf("actual = %c predicted = %c\n", testLabels[sample], prediction );
                 wrong++;
               }
+              
+              //has the code made this prediction before?
+              usedBefore=0;
+              for(  i=0;i< numDifferentPredictions && usedBefore==0;i++)
+              {
+                  if (prediction == predictionLabels[i])
+                  {
+                      predictionsCounters[i]++;
+                      usedBefore = 1;
+                  }
+              }
+              if(usedBefore==0)
+              {
+                  predictionLabels[numDifferentPredictions] = prediction;
+                  predictionsCounters[numDifferentPredictions] = 1;
+                  numDifferentPredictions++;
+              }
+              
           }
         
         accuracy = 100.0*(double)correct/(correct+wrong);
@@ -205,6 +263,7 @@ if(argc!=2)
         if( unachievable>0)
           {
             score = 0.0;
+              printf("JIM_FEEDBACK:  HINT: your code  has predicted a label that did not exist in the training set, so it should have known was a possibility.\n");
           }
         else
           {
@@ -213,12 +272,18 @@ if(argc!=2)
                 score = 100.0;
             else if( score < 5.0)
                 score = 90.0;
-            else if (version <2 && score < 10.0) //shouldnt be ale ot get more than +/-5 of 1/3 for random guessing)
+            else if (score < 10.0) 
                 score = 80.0;
         else score = 50.0;
           }
     
-            
+              printf("JIM_FEEDBACK: On  test set %d: your code got %d correct %d incorrect, accuracy = %f %%\n", version,correct,wrong,accuracy );
+              printf("JIM_FEEDBACK: \t\tThe frequency with which it predicted different class labels was: \t");
+              for(int  i=0;i< numDifferentPredictions ;i++)
+              {
+                  printf(" %c  %d\t",predictionLabels[i],predictionsCounters[i]);
+              }
+          printf("\n");
         printf("Score on dataset %d = %f\nYour algorithm got %d prediction%c right, and %d wrong with an accuracy of %f\n",version,score,correct,(correct ==1)?' ':'s', wrong, accuracy);
         printf("The target for this dataset was %f\n",target);
         if(unachievable>0)

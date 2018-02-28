@@ -1,5 +1,5 @@
 //
-//  TestData.h
+//  TestDataset.h
 //  MLCoursework
 //
 //  Created by Jim Smith on 27/02/2018.
@@ -10,9 +10,9 @@
 #define TestData_h
 
 
-#define TEST_SET_SIZE 150
-#define TESTFEATURES 4
-float test_data[TEST_SET_SIZE][TESTFEATURES] ={
+#define EVALUATION_SET_SIZE 150
+#define EVALUATIONFEATURES 4
+float evaluation_data[EVALUATION_SET_SIZE][EVALUATIONFEATURES] ={
     5.1	,	3.5	,	1.4	,	0.2	,
     4.9	,	3	,	1.4	,	0.2	,
     4.7	,	3.2	,	1.3	,	0.2	,
@@ -167,7 +167,7 @@ float test_data[TEST_SET_SIZE][TESTFEATURES] ={
 
 
 
-char test_labels[TEST_SET_SIZE] = {
+char evaluation_labels[EVALUATION_SET_SIZE] = {
     'p'	,
     'p'	,
     'p'	,
@@ -320,4 +320,4 @@ char test_labels[TEST_SET_SIZE] = {
     'r'
 };
 
-#endif /* TestData_h */
+#endif /* IrisData_h */

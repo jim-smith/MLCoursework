@@ -10,7 +10,7 @@
 //
 
 #include "TrainAndTest.h"
-
+#include <math.h>
 
 
 //declare this array as static but make it available to any function in this file
@@ -21,7 +21,7 @@ static char myModelLabels[NUM_TRAINING_SAMPLES];
 
 static int trainingSetSize=0;
 
-int  train( double **trainingSamples, char *trainingLabels, int numSamples, int numFeatures)
+int  Xtrain( double **trainingSamples, char *trainingLabels, int numSamples, int numFeatures)
 {
     int returnval = 1;
     int sample, feature;
@@ -75,12 +75,16 @@ int  train( double **trainingSamples, char *trainingLabels, int numSamples, int 
     return returnval;
 }
 
-char  predictLabel(double *sample, int numFeatures)
+char  XpredictLabel(double *sample, int numFeatures)
 {
     
        //this is a silly trivial test function
        // obviously you need to replace this with something that uses the model you built in your train() function
         char prediction = 'c';
+    for (int feature=0;feature< numFeatures;feature++)
+        printf("feature %d has value %f", feature,sample[feature]);
+    printf("\n");
+    
     
     return prediction;
     

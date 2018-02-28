@@ -67,7 +67,7 @@ char  predictLabel(double *sample, int numFeatures)
        //this is a silly trivial test function
        // obviously you need to replace this with something that uses the model you byilt in your train() function
         char prediction = 'c';
-    return prediction;
+    //    return prediction;
   
     float BIGNUM = 9999e45;
     float  thisdist, diff, nearestDistSoFar = BIGNUM;
@@ -96,9 +96,8 @@ char  predictLabel(double *sample, int numFeatures)
     }//end loop over exemplars in the models
      //this is 1-Nearet neighour so just get the label of the closest
     prediction = myModelLabels[closest];
-    
-    
-    
+   
+   
  
     return prediction;
     

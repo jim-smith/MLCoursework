@@ -53,22 +53,22 @@ int main(int argc, const char * argv[])
     
     //simple 2/3: 1/3 split of iris data into training and test set matrices
     
-    for(sample=0; sample< IRIS_SET_SIZE;  sample++)
+    for(sample=0; sample< TEST_SET_SIZE;  sample++)
       {
         if(sample%3==0)
           {
-            for (feature=0;feature < IRISFEATURES;  feature++)
-              testSet[testsamples][feature] = iris_data[sample][feature];
+            for (feature=0;feature < TESTFEATURES;  feature++)
+              testSet[testsamples][feature] = test_data[sample][feature];
 
-            testLabels[testsamples] =iris_labels[sample];
+              testLabels[testsamples] =test_labels[sample];
             testsamples++;
           }
         else
           {
-            for (feature=0;feature < IRISFEATURES;  feature++)
-              trainingSet[trainingsamples][feature] = iris_data[sample][feature];
+            for (feature=0;feature < TESTFEATURES;  feature++)
+              trainingSet[trainingsamples][feature] = test_data[sample][feature];
             
-            trainingLabels[trainingsamples] = iris_labels[sample];
+            trainingLabels[trainingsamples] = test_labels[sample];
             trainingsamples++;
           }
       }
@@ -100,7 +100,7 @@ int main(int argc, const char * argv[])
                 correct++;
             else
               {
-                printf("actual = %c predicted = %c\n", trainingLabels[sample], prediction );
+                //printf("actual = %c predicted = %c\n", trainingLabels[sample], prediction );
                 wrong++;
               }
           }
@@ -121,7 +121,7 @@ int main(int argc, const char * argv[])
                 correct++;
             else
               {
-                printf("actual = %c predicted = %c\n", testLabels[sample], prediction );
+                //printf("actual = %c predicted = %c\n", testLabels[sample], prediction );
                 wrong++;
               }
           }

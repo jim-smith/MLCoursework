@@ -11,7 +11,7 @@
 
 #include "TrainAndTest.h"
 #include <math.h>
-
+#include <stdlib.h>
 
 //declare this array as static but make it available to any function in this file
 //in case we want to store the training examples  and use them later
@@ -19,20 +19,29 @@ static    double myModel[NUM_TRAINING_SAMPLES][ NUM_FEATURES];
 //even if each item in the training set is from a diffferent class we know how many there are
 static char myModelLabels[NUM_TRAINING_SAMPLES];
 
+static int labelUsed[256];
+
 static int trainingSetSize=0;
 
-int  Xtrain( double **trainingSamples, char *trainingLabels, int numSamples, int numFeatures)
+int  train( double **trainingSamples, char *trainingLabels, int numSamples, int numFeatures)
 {
     int returnval = 1;
     int sample, feature;
-    
+    char thisLabel;
+    int ithisLabel;
   
     
     //clean the model because C leaves whatever is in the memory
-    for (sample=0; sample < NUM_TRAINING_SAMPLES; sample++) {
-        for (feature=0; feature<NUM_FEATURES; feature++) {
+    for (sample=0; sample < NUM_TRAINING_SAMPLES; sample++)
+    {
+        for (feature=0; feature<NUM_FEATURES; feature++)
+        {
             myModel[sample][feature] = 0.0;
         }
+    }
+    for (sample=0; sample<256; sample++)
+    {
+        labelUsed[sample] = 0;
     }
     
     //sanity checking
@@ -53,11 +62,19 @@ int  Xtrain( double **trainingSamples, char *trainingLabels, int numSamples, int
         //store the labels and the feature values
         trainingSetSize = numSamples;
         int index,feature;
-        for (index=0; index < numSamples; index++) {
+        for (index=0; index < numSamples; index++)
+        {
             myModelLabels[index] = trainingLabels[index];
-            for (feature=0; feature < numFeatures; feature++) {
+            for (feature=0; feature < numFeatures; feature++)
+            {
                 myModel[index][feature] = trainingSamples[index][feature];
             }
+            
+            thisLabel = trainingLabels[index];
+            ithisLabel = (int) thisLabel;
+            labelUsed[ithisLabel] ++ ;
+            
+            
         }
         fprintf(stdout,"data stored locally \n");
     }//end else
@@ -75,17 +92,27 @@ int  Xtrain( double **trainingSamples, char *trainingLabels, int numSamples, int
     return returnval;
 }
 
-char  XpredictLabel(double *sample, int numFeatures)
+
+/* this is a really trivial classifier that just returns any valid label.
+ So it assumes that the features are all irrelevant,
+ and even ignores  the relative frequency that values occur in training
+ */
+char  predictLabel(double *sample, int numFeatures)
 {
     
-       //this is a silly trivial test function
-       // obviously you need to replace this with something that uses the model you built in your train() function
-        char prediction = 'c';
-    for (int feature=0;feature< numFeatures;feature++)
-        printf("feature %d has value %f", feature,sample[feature]);
-    printf("\n");
+    char prediction= (char)NULL;
+    int  choice, validChoiceMade=0;
     
-    
+    while (validChoiceMade == 0)
+    {
+        choice = rand() %256;
+        if ( labelUsed[choice] >0 )
+        {
+            prediction = (char) choice;
+            validChoiceMade = 1;
+            
+        }
+    }
     return prediction;
     
 }
